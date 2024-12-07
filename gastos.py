@@ -1,22 +1,30 @@
 import sqlite3
 
+def filter_number(value : float) -> float:
+    if type(value) != float and type(value) != int:
+        print("Valor precisa ser um numero!")
+        return
+    if value <= 0:
+        print("Valor precisa ser maior que 0.01!")
+        return
+    return float(value)
+
+def filter_str(string : str) -> str:
+    if type(string) != str:
+        print("Nome precisa ser letras!")
+        return
+    if string == '':
+        print("Nome nao pode ficar vazio!")
+        return
+    return string
+
 def add_to_db(key : str, value : float) -> None:
     try:
         db = sqlite3.connect('db_gastos.db')
         cursor = db.cursor()
 
-        if type(key) != str:
-            print("Key must be string!")
-            return 1
-        if key == '':
-            print("Key cant't be empty!")
-            return 1
-        if type(value) != float and type(value) != int:
-            print("Value must be a number!")
-            return 2
-        if value <= 0:
-            print("Value can't be less than 0.01!")
-            return 2
+        
+        
         cursor.execute(f"INSERT INTO gastos VALUES('{key}',{value})")
         db.commit()
         db.close()
@@ -49,61 +57,40 @@ def clear_db() -> None:
         cursor.execute(f"DELETE from gastos")
         db.commit()
         db.close()
-        print("Data cleared with sucess!")
+        print("Dados limpos com sucesso!")
     except sqlite3.Error as erro:
-        print(f"Error when cleaning data: {erro}")
+        print(f"Erro ao limpar dados: {erro}")
 
+#updates a value from db with the new_value value, where the key name is located
 def update_keyValue_db(target_key : str, new_value : float) -> None:
-    try:
-        db = sqlite3.connect('db_gastos.db')
-        cursor = db.cursor()
-
-        if type(target_key) != str:
-            print("Key must be string!")
-            return 1
-        if target_key == '':
-            print("Key cant't be empty!")
-            return 1
-        if type(new_value) != float and type(new_value) != int:
-            print("Value must be a number!")
-            return 2
-        if new_value <= 0:
-            print("Value can't be less than 0.01!")
-            return 2
-        cursor.execute(f"UPDATE gastos SET valor = {new_value} WHERE conta = '{target_key}'")
-        db.commit()
-        db.close()
-        print("Key value updated with sucess!")
-    except sqlite3.Error as erro:
-        print(f"Error updating Key value: {erro}")
-
-def update_keyName_db(target_key : str, new_key : float) -> None:
     temp_dict = retrieve_data_dict()
-    try:
-        for k, v in temp_dict;
-            if k == target_key:
-                
-        db = sqlite3.connect('db_gastos.db')
-        cursor = db.cursor()
+    for k, v in temp_dict.items():
+        if k == target_key:
+            try:
+                db = sqlite3.connect('db_gastos.db')
+                cursor = db.cursor()
+                cursor.execute(f"UPDATE gastos SET valor = '{filter_number(new_value)}' WHERE conta = '{filter_str(target_key)}'")
+                db.commit()
+                db.close()
+                print("Valor atualizado com sucesso!")
+            except sqlite3.Error as erro:
+                print(f"Erro atualizando o valor: {erro}")
 
-        if type(target_key) != str:
-            print("Key must be string!")
-            return 1
-        if target_key == '':
-            print("Key cant't be empty!")
-            return 1
-        if type(new_key) != str:
-            print("NewKey must be string!")
-            return 2
-        if new_key == '':
-            print("NewKey cant't be empty!")
-            return 1
-        cursor.execute(f"UPDATE gastos SET conta = '{new_key}' WHERE conta = '{target_key}'")
-        db.commit()
-        db.close()
-        print("KeyName updated with sucess!")
-    except sqlite3.Error as erro:
-        print(f"Error updating KeyName value: {erro}")
+
+#updates a key from db with the new_key value
+def update_keyName_db(target_key : str, new_key : str) -> None:
+    temp_dict = retrieve_data_dict()
+    for k, v in temp_dict.items():
+        if k == target_key:
+            try:
+                db = sqlite3.connect('db_gastos.db')
+                cursor = db.cursor()
+                cursor.execute(f"UPDATE gastos SET conta = '{filter_str(new_key)}' WHERE conta = '{filter_str(target_key)}'")
+                db.commit()
+                db.close()
+                print("Nome atualizado com sucesso!!!")
+            except sqlite3.Error as erro:
+                print(f"Erro atualizando o nome: {erro}")
 
 #retrive raw list, remeber RAW
 def retrieve_data_dict():
@@ -121,5 +108,5 @@ def retrieve_data_dict():
         print(f"Error when retriving data: {erro}")
 
 remove_key_from_db('test')
-update_keyName_db('aluguel', casa)
+update_keyName_db('aluguel', 'casa')
 print(retrieve_data_dict())
