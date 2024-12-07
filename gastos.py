@@ -9,8 +9,8 @@ def filter_number(pergunta : str) -> float:
                 print("Valor precisa ser maior que 0.01!\n")
                 continue
             break
-        except TypeError as e:
-                print(f"Valor precisa ser um numero: {e}\n")
+        except:
+                print(f"Valor precisa ser um numero!\n")
                 continue
     return float(value)
 
@@ -25,17 +25,25 @@ def filter_str(pergunta: str) -> str:
             print("Nome nao pode ficar vazio!\n")
             continue
         break
-    while string.startswith(' '):
-        string[0] = ''
-    string.replace(" ", "_")
     return string.lower()
+
+#remove the blanck spaces in beggining and finish 
+def remove_initial_last_spaces(string : str) -> str:
+    list1 : list = list(string)
+    while list1[0] == ' ':
+        list1.pop(0)
+    while list1[-1] == ' ':
+        list1.pop(-1)
+    return str(''.join(list1))
 
 #add key to db
 def add_to_db(key : str, value : float) -> None:
-    while key.startswith(' '):
-        key[0] = ''
-    key.replace(" ", "_")
-    key = key.lower()
+    key = remove_initial_last_spaces(key)
+    temp_dict = retrieve_data_dict()
+    for k in temp_dict.items():
+        if key == k:
+            print("Nome ja existe!\n")
+            return
     try:
         db = sqlite3.connect('db_gastos.db')
         cursor = db.cursor()
@@ -87,7 +95,7 @@ def update_keyValue_db(target_key : str) -> None:
     for k, v in temp_dict.items():
         if k == target_key.lower():
             try:
-                new_value : float = filter_number("Qual o novo valor")
+                new_value : float = filter_number("Digite o NOVO valor da conta: R$")
                 db = sqlite3.connect('db_gastos.db')
                 cursor = db.cursor()
                 cursor.execute(f"UPDATE gastos SET valor = '{new_value}' WHERE conta = '{target_key.lower()}'")
@@ -108,7 +116,7 @@ def update_keyName_db(target_key : str) -> None:
 
     for k, v in temp_dict.items():
         if k == target_key.lower():
-            new_key : str = filter_str("Qual o novo nome")
+            new_key : str = filter_str("Digite o NOVO nome da conta: ")
             try:
                 db = sqlite3.connect('db_gastos.db')
                 cursor = db.cursor()
@@ -138,5 +146,46 @@ def retrieve_data_dict():
     except sqlite3.Error as erro:
         print(f"Erro carregando dados: {erro}\n")
 
-add_to_db('   sex test', 12222)
-print(retrieve_data_dict())
+def print_menu():
+        temp_dict = retrieve_data_dict()
+        line()
+        print(" MENU DE GASTOS ".center(80, '*'))
+        line()
+        print(f"Conta".center(39) + "|" + "Valor".center(39))
+        line()
+        for k, v in temp_dict.items():
+            print("-----|" + f"{k}".center(33) + "|             " + f"R${v:.02f}".ljust(21) + "|-----")
+        line()
+
+def line():
+    print('-'.center(80, '-'))
+
+def main() -> None:
+    while True:
+        print_menu()
+        print(" 1. Cadastrar conta\n",
+              "2. Atualizar nome da conta\n",
+              "3. Atualizar valor da conta\n",
+
+              )
+        selection = input(">>").lower()
+        match selection:
+            case '1':
+                add_to_db(filter_str("Digite o nome da conta: "), filter_number("Digite o valor da conta: R$"))
+            case '2':
+                update_keyName_db(filter_str("Digite o nome da conta: "))
+            case '3':
+                break
+
+
+
+
+
+
+
+
+
+
+add_to_db('testa', 11111111)
+
+main()
