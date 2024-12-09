@@ -1,1 +1,11 @@
-Projeto basico de um sistema de controle financeiro para trabalhadores que recebem diariamente!\n <br />Conta com sistema de Cadastramento completo de contas fixas!\n <br />TO DO:\n <br />  Sistema de recebimento diario de valores\n <br />  Sistema de estatisticas\n <br />  Sistema de da e mes para abatimento dos valores\n <br />  Cadastramento de datas de vencimentos de contas fixas\n <br />  Sistema de cadastramento de gastos diarios com abatimento no valores recebidos diarios\n <br />  Sistemas de mes para reinicio automatico do DB ao fim do mes\n <br />MAYBE TO DO:\n <br />  Sistema de GUI\n <br />
+Projeto basico de um sistema de controle financeiro para trabalhadores que recebem diariamente! <br />
+Conta com sistema de Cadastramento completo de contas fixas! <br />
+TO DO: <br />  
+  Sistema de recebimento diario de valores <br />  
+  Sistema de estatisticas <br />  
+  Sistema de da e mes para abatimento dos valores <br />  
+  Cadastramento de datas de vencimentos de contas fixas <br />  
+  Sistema de cadastramento de gastos diarios com abatimento no valores recebidos diarios <br />  
+  Sistemas de mes para reinicio automatico do DB ao fim do mes <br />
+MAYBE TO DO: <br />  
+  Sistema de GUI <br />
