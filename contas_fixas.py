@@ -1,4 +1,5 @@
 import sqlite3
+import os.path
 
 id_global = 0
 
@@ -156,6 +157,20 @@ def load_id():
     global id_global
     id_global = id
 
+def check_db_exist():
+    if os.path.isfile("./contas.db"):
+        return
+    else:
+        try:
+            db = sqlite3.connect('contas.db')
+            cursor = db.cursor()
+            cursor.execute(f"CREATE TABLE contas(id int, conta text, valor float)")
+            db.commit()
+            db.close()
+            print(f"DB criado com sucesso!\n")
+        except sqlite3.Error as erro:
+            print(f"Erro criando db: {erro}\n")
+
 def print_menu():
         line()
         print(" MENU DE CONTAS FIXAS ".center(87, '*'))
@@ -184,6 +199,7 @@ def line():
     print('-'.center(87, '-'))
 
 def main() -> None:
+    check_db_exist()
     load_id()
     global id_global
     while True:
