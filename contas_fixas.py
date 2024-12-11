@@ -1,4 +1,5 @@
 import sqlite3
+from termcolor import colored
 import os.path
 
 id_global = 0
@@ -190,9 +191,9 @@ def print_menu():
             conta = dict['conta']
             valor = dict['valor']
             acum += valor
-            print("-----|" + f"{id}".center(6) + '|' + f"{conta}".center(30) + "   |   " + f"R${valor}".center(31) + "|-----")
+            print("-----|" + colored(f"{id}".center(6), 'blue') + '|' + colored(f"{conta}".center(30), 'red') + "   |   " + colored(f"R${valor:0.2f}".center(31), "green") + "|-----")
         line()
-        print("-----|" + f"".center(6) + '|' + f"Valor Total".center(30) + "   |   " + f"R${acum}".center(31) + "|-----")
+        print("-----|" + f"".center(6) + '|' + colored(f"Valor Total".center(30), 'red') + "   |   " + colored(f"R${acum:0.2f}".center(31), 'green') + "|-----")
         line()
 
 def line():
@@ -229,6 +230,3 @@ def main() -> None:
                             clear_db()
             case '6':
                 break
-
-#main
-main()
