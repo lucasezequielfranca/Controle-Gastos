@@ -8,8 +8,57 @@ current_day : int = int(datetime.today().strftime('%d'))
 current_year : int = int(datetime.today().strftime('%Y'))
 month_range_tupple : int = monthrange(current_year, current_month)
 month_range : int = int(month_range_tupple[1])
-print(month_range)
 
+
+def filter_float(pergunta : str) -> float:
+    while True:
+        try:
+            value = float(input(pergunta))
+            if value <= 0:
+                print("Valor precisa ser maior que 0.01!\n")
+                continue
+            break
+        except:
+                print(f"Valor precisa ser um numero!\n")
+                continue
+    return float(value)
+
+def filter_int(pergunta : str) -> float:
+    while True:
+        try:
+            value = int(input(pergunta))
+            if value <= 0:
+                print("Valor precisa ser maior que 0!\n")
+                continue
+            break
+        except:
+                print(f"Valor precisa ser um numero inteiro!\n")
+                continue
+    return int(value)
+
+def filter_str(pergunta: str) -> str:
+    values = list("abcdefghijklmnopqrstuvwxyz ")
+    while True:
+        my_string = input(pergunta).lower()
+        if my_string == '':
+            print("Nome nao pode ficar em branco\n")
+            continue
+        for item in my_string:
+            if item not in values:
+                my_string = my_string.replace(item, "")
+        list1 : list = list(my_string)
+        while list1[0] == ' ':
+            list1.pop(0)
+        while list1[-1] == ' ':
+            list1.pop(-1)
+        if len(list1) > 30:
+            print("O nome nao pode ser maior que 30 caracteres\n"
+                  "Removendo caracteres excedentes!")
+        while len(list1) > 30:
+            list1.pop(-1)
+        my_string = str(''.join(list1))
+        break
+    return my_string
 
 def execute_total(cmd : str, month=current_month, year=current_year):
     try:
@@ -61,8 +110,5 @@ def main():
     create_dbs()
 
 main()
-data_total = retrieve_data_dict("total")
-for day in data_total:
-    if day['dia_total'] == current_day:
-        for k,v in day.items():
-            print(f"{k},{v}")
+def adicionar_gasto():
+    nome = input("Digite o nome do gasto: ")
