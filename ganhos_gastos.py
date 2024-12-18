@@ -2,6 +2,7 @@ from calendar import monthrange
 from datetime import datetime
 import sqlite3
 import os.path
+from termcolor import colored
 
 current_month : int = int(datetime.today().strftime('%m'))
 current_day : int = int(datetime.today().strftime('%d'))
@@ -9,6 +10,11 @@ current_year : int = int(datetime.today().strftime('%Y'))
 month_range_tupple : int = monthrange(current_year, current_month)
 month_range : int = int(month_range_tupple[1])
 
+
+
+#################################
+#to do:
+#separar o db total para o menu principal, esse aqui ser apenas o menu de detalhes dos dias, contas fixas automaticante serem adicionadas no menu total de gastos
 
 def filter_float(pergunta : str) -> float:
     while True:
@@ -88,13 +94,17 @@ def create_dbs(month=current_month,year=current_year):
             execute_total(f"INSERT INTO total VALUES({i + 1}, 0.0, 0.0)")
             i += 1
     if os.path.isfile(f"./{month}_{year}_detalhes.db") == False:
-        execute_detalhes("CREATE TABLE detalhes(dia_detalhado int, ganho_detalhado float, gastos_detalhado float)")
+        i = 0
+        while i < month_range:
+            execute_detalhes(f"CREATE TABLE dia{str(i + 1)}(idgg int, nome float, valor float)") # idgg id ganho gasto 0 ganho 1 pra gasto
+            i += 1
 
-def retrieve_data_dict(my_db : str, month=current_month, year=current_year):
+#recupera dados do db total mes e ano
+def retrieve_data_total(month=current_month, year=current_year):
     temp_dict : list[dict[str, float]] = {}
     try:
-        cur = sqlite3.connect(f'{month}_{year}_{my_db}.db').cursor()
-        query = cur.execute(f'SELECT * FROM {my_db}')
+        cur = sqlite3.connect(f'{month}_{year}_total.db').cursor()
+        query = cur.execute(f'SELECT * FROM total')
         colname = [ d[0] for d in query.description ]
         temp_dict = [ dict(zip(colname, r)) for r in query.fetchall() ]
         cur.close()
@@ -103,12 +113,100 @@ def retrieve_data_dict(my_db : str, month=current_month, year=current_year):
     except sqlite3.Error as erro:
         print(f"Erro carregando dados: {erro}\n")
 
+#recupera os dados do db detalhes e retorna um dict com uma lista de dicts, dia e mes e ano especifico
+def retrieve_data_detalhes(dia = current_day, month=current_month, year=current_year):
+    temp_dict : list[dict[str, float]] = {}
+    try:
+        cur = sqlite3.connect(f'{month}_{year}_detalhes.db').cursor()
+        query = cur.execute(f'SELECT * FROM dia{str(dia)}')
+        colname = [ d[0] for d in query.description ]
+        temp_dict = [ dict(zip(colname, r)) for r in query.fetchall() ]
+        cur.close()
+        cur.connection.close()
+        return temp_dict
+    except sqlite3.Error as erro:
+        print(f"Erro carregando dados: {erro}\n")
 
+#adiciona o gasto no dia mes e ano indicado
+def adicionar_gasto(id = 1, dia = current_day, month = current_month, year = current_year):
+    nome = filter_str("Digite o nome do gasto: ")
+    valor = filter_float("Digite o valor do gasto: ")
+    id = 1
+    execute_detalhes(f"INSERT INTO dia{str(dia)} VALUES({id},'{nome}',{valor})", month, year)
+def adicionar_ganho(id = 0, dia = current_day, month = current_month, year = current_year):
+    nome = filter_str("Digite o nome do ganho: ")
+    valor = filter_float("Digite o valor do ganho: ")
+    id = 0
+    execute_detalhes(f"INSERT INTO dia{str(dia)} VALUES({id},'{nome}',{valor})", month, year)
+#
+def editar_entrada(dia = current_day, month = current_month, year = current_year):
+    nome = filter_str("Digite o nome da entrada a ser editada: ")
+    data = retrieve_data_detalhes(dia, month, year)
+    for dict in data:
+        if dict['nome'] == nome:
+            print("Continue daqui")
+            return
+    print("Entrada nao encontrada!\n")
 
+def line():
+    print('-'.center(87, '-'))
+
+def print_menu(dia = current_day, month = current_month, year = current_year):
+        line()
+        print(f" MENU DETALHADO DO DIA {dia} ".center(87, '*'))
+        line()
+        print("-----|" + f"ID".center(6) + '|' + f"Conta".center(30) + "   |   " + f"Valor".center(31) + "|-----")
+        line()
+        temp_dict = retrieve_data_detalhes(dia, month, year)
+        acum : float = 0.0
+        if temp_dict == []:
+            print("-----|" + f"----".center(6) + '|' + f"----------".center(30) + "   |   " + f"R$----".center(31) + "|-----")
+            line()
+            print("-----|" + f"----".center(6) + '|' + f"Valor Total".center(30) + "   |   " + f"R$----".center(31) + "|-----")
+            line()
+            return
+        acum = 0
+        for dict in temp_dict:
+            id = dict['idgg']
+            conta = dict['nome']
+            valor = dict['valor']
+            color = "white"
+            colorfinal = "white"
+            if id == 0:
+                color = 'green'
+                acum += valor
+            if id == 1:
+                color = 'red'
+                acum -= valor
+            print("-----|" + colored(f"{id}".center(6), 'blue') + '|' + colored(f"{conta}".center(30), f'{color}') + "   |   " + colored(f"R${valor:0.2f}".center(31), f"{color}") + "|-----")
+        line()
+        if acum < 0:
+            colorfinal = 'red'
+        if acum > 0:
+            colorfinal = 'green'
+        print("-----|" + f"".center(6) + '|' + colored(f"Valor Total".center(30), 'blue') + "   |   " + colored(f"R${acum:0.2f}".center(31), f'{colorfinal}') + "|-----")
+        line()
 
 def main():
     create_dbs()
-
+    while True:
+        print_menu()
+        print(" 1. Adicionar gasto\n",
+              "2. Adicionar ganho\n",
+              "3. Editar entrada\n",
+              "4. Remover entrada\n",
+              "5. Apagar dia\n",
+              "6. Voltar\n"
+              )
+        selection = input(">>")
+        match selection:
+            case '1':
+                adicionar_gasto()
+            case '2':
+                adicionar_ganho()
+            case '3':
+                editar_entrada()
+                
+    
 main()
-def adicionar_gasto():
-    nome = input("Digite o nome do gasto: ")
+
