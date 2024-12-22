@@ -1,4 +1,5 @@
 from termcolor import colored as colored
+from termcolor import colored
 
 def filtrar_float(pergunta : str) -> float:
     while True:

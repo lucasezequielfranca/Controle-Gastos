@@ -1,4 +1,5 @@
 import menu_contas_fixas
+from termcolor import colored
 import menu_dia_detalhado
 from calendar import monthrange
 from datetime import datetime
