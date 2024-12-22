@@ -1,4 +1,8 @@
 from termcolor import colored as colored
+import os
+import colorama
+colorama.init()
+os.system("")
 
 def filtrar_float(pergunta : str) -> float:
     while True:
