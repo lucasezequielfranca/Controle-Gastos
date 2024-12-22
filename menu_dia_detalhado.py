@@ -1,5 +1,4 @@
 from funcoes import *
-from termcolor import colored
 import sqlite3
 import os.path
 
