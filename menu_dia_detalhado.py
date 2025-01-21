@@ -85,12 +85,21 @@ def editar_entrada(dia : int, mes : int, ano : int):
     data = retrieve_data_detalhes(dia, mes, ano)
     for dict in data:
         if dict['nome'] == nome:
-            print("Continue daqui")
+            novo_nome = filtrar_str("Digite o novo nome: ")
+            novo_valor = filtrar_float("Digite o novo valor: ")
+            execute_detalhes(f"UPDATE dia{str(dia)} SET valor = {novo_valor} WHERE nome = '{nome}'", mes, ano)
+            execute_detalhes(f"UPDATE dia{str(dia)} SET nome = '{novo_nome}' WHERE nome = '{nome}'", mes, ano)
             return
     print("Entrada nao encontrada!\n")
 
 def remover_entrada(dia : int, mes : int, ano : int):
-    pass
+    nome = filtrar_str("Digite o nome da entrada a ser APAGADA: ")
+    data = retrieve_data_detalhes(dia, mes, ano)
+    for dict in data:
+        if dict['nome'] == nome:
+            execute_detalhes(f"DELETE from dia21 where valor = 1300.0", mes, ano)
+            return
+    print("Entrada nao encontrada!\n")
 
 def apagar_dia(dia : int, mes : int, ano : int):
     pass

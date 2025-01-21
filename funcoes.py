@@ -29,7 +29,7 @@ def filtrar_int(pergunta : str) -> float:
     return int(value)
 
 def filtrar_str(pergunta: str) -> str:
-    values = list("abcdefghijklmnopqrstuvwxyz ")
+    values = list("abcdefghijklmnopqrstuvwxyz0123456789 ")
     while True:
         my_string = input(pergunta).lower()
         if my_string == '':

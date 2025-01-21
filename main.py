@@ -3,8 +3,6 @@ import menu_dia_detalhado
 from calendar import monthrange
 from datetime import datetime
 from funcoes import *
-import sqlite3
-import os.path
 
 current_month : int = int(datetime.today().strftime('%m'))
 current_day : int = int(datetime.today().strftime('%d'))
